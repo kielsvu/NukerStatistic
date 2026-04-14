@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Kiel · Discord Dashboard</title>
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #090c12;
+      color: #edeef2;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ----- SIDEBAR ----- */
+    .sidebar {
+      width: 280px;
+      background: #0d1117;
+      border-right: 1px solid #21262d;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.25s ease;
+      z-index: 30;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px 16px;
+      border-bottom: 1px solid #21262d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-header h2 {
+      font-weight: 600;
+      font-size: 1.5rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #a8b9ff 0%, #7f8cff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav {
+      flex: 1;
+      padding: 20px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      color: #b1bac4;
+      font-weight: 500;
+      transition: all 0.15s;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .nav-item i {
+      width: 20px;
+      height: 20px;
+      color: #8b949e;
+    }
+
+    .nav-item.active {
+      background: #1c212b;
+      color: white;
+    }
+
+    .nav-item.active i {
+      color: #7f8cff;
+    }
+
+    .nav-item:hover:not(.active) {
+      background: #161b22;
+      color: #e6edf3;
+    }
+
+    .sidebar-footer {
+      padding: 20px;
+      border-top: 1px solid #21262d;
+      font-size: 0.8rem;
+      color: #7d8590;
+    }
+
+    .sidebar-footer .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .online-dot {
+      width: 10px;
+      height: 10px;
+      background: #3fb950;
+      border-radius: 50%;
+      box-shadow: 0 0 8px #3fb95080;
+    }
+
+    /* ----- MAIN CONTENT ----- */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      background: #0b0e14;
+    }
+
+    .top-bar {
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1a1f2a;
+      background: #0b0e14;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: #b1bac4;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .page-title {
+      font-weight: 600;
+      font-size: 1.25rem;
+    }
+
+    .top-bar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-btn {
+      background: #1c212b;
+      border: 1px solid #30363d;
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: #c9d1d9;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.15s;
+    }
+
+    .settings-btn:hover {
+      background: #262c36;
+    }
+
+    /* ----- CONTROLS ----- */
+    .control-bar {
+      display: flex;
+      gap: 12px;
+      padding: 20px 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s;
+      background: #21262d;
+      color: #c9d1d9;
+      border: 1px solid #30363d;
+    }
+
+    .btn-primary {
+      background: #5865f2;
+      border-color: #7983f5;
+      color: white;
+      box-shadow: 0 4px 12px #5865f240;
+    }
+
+    .btn-primary:hover {
+      background: #4752c4;
+    }
+
+    .btn-warning {
+      background: #da3633;
+      border-color: #f85149;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #b62324;
+    }
+
+    /* ----- STAT CARDS ----- */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      padding: 0 24px 24px;
+    }
+
+    .stat-card {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 20px;
+      padding: 20px;
+      transition: transform 0.2s;
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: #8b949e;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #fff, #d2d8ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .stat-trend {
+      font-size: 0.8rem;
+      color: #3fb950;
+      margin-top: 8px;
+    }
+
+    /* ----- ACCOUNT TABLE (Card style) ----- */
+    .section-title {
+      padding: 8px 24px;
+      font-weight: 600;
+      color: #b1bac4;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+
+    .account-grid {
+      padding: 0 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .account-row {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 16px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .account-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 160px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-green { background: #3fb950; box-shadow: 0 0 8px #3fb950; }
+    .dot-yellow { background: #d29922; box-shadow: 0 0 8px #d29922; }
+    .dot-red { background: #f85149; box-shadow: 0 0 8px #f85149; }
+
+    .account-name {
+      font-weight: 600;
+    }
+
+    .account-channel {
+      color: #8b949e;
+      min-width: 140px;
+    }
+
+    .account-stats {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .msg-count {
+      font-weight: 600;
+      color: #c9d1d9;
+    }
+
+    .account-status-tag {
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: #1c212b;
+    }
+
+    /* ----- LOG FEED ----- */
+    .log-container {
+      padding: 0 24px 24px;
+    }
+
+    .log-box {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 20px;
+      padding: 8px 0;
+      max-height: 240px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      padding: 10px 20px;
+      border-bottom: 1px solid #1a1f2a;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 16px;
+      color: #b1bac4;
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+
+    .log-time {
+      color: #6e7681;
+      min-width: 70px;
+    }
+
+    .log-success { color: #7ee787; }
+    .log-warning { color: #d29922; }
+    .log-error { color: #f85149; }
+
+    /* ----- MOBILE STYLES ----- */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        transform: translateX(-100%);
+        box-shadow: 4px 0 20px #00000040;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 0 16px 20px;
+      }
+
+      .stat-value {
+        font-size: 1.8rem;
+      }
+
+      .control-bar {
+        padding: 16px;
+      }
+
+      .btn {
+        flex: 1;
+        justify-content: center;
+      }
+
+      .account-row {
+        padding: 14px 16px;
+      }
+
+      .account-stats {
+        margin-left: 0;
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .section-title {
+        padding: 8px 16px;
+      }
+
+      .account-grid, .log-container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .top-bar {
+        padding: 12px 16px;
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0e14; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <i data-lucide="zap" style="color: #7f8cff;"></i>
+      <h2>Kiel</h2>
+    </div>
+    <div class="nav">
+      <div class="nav-item active">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Dashboard</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="message-square"></i>
+        <span>Messages</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="users"></i>
+        <span>Accounts</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="hash"></i>
+        <span>Channels</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="scroll-text"></i>
+        <span>Logs</span>
+      </div>
+      <div class="nav-item">
+        <i data-lucide="settings"></i>
+        <span>Settings</span>
+      </div>
+    </div>
+    <div class="sidebar-footer">
+      <div class="status">
+        <span class="online-dot"></span>
+        <span>System online</span>
+      </div>
+      <div>v2.1.0 · Kiel Dashboard</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <button class="menu-toggle" id="menuToggle">
+          <i data-lucide="menu"></i>
+        </button>
+        <span class="page-title">Dashboard</span>
+      </div>
+      <div class="top-bar-right">
+        <button class="settings-btn" id="settingsTrigger">
+          <i data-lucide="bell"></i>
+          <span>3</span>
+        </button>
+        <button class="settings-btn">
+          <i data-lucide="user"></i>
+          <span>Kiel</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- CONTROL BUTTONS -->
+    <div class="control-bar">
+      <button class="btn btn-primary" id="startBtn"><i data-lucide="play"></i> Start</button>
+      <button class="btn" id="pauseBtn"><i data-lucide="pause"></i> Pause</button>
+      <button class="btn btn-warning" id="stopBtn"><i data-lucide="square"></i> Stop</button>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Messages Sent</div>
+        <div class="stat-value" id="msgSent">1,247</div>
+        <div class="stat-trend">↑ 12% today</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Errors</div>
+        <div class="stat-value" id="errors">12</div>
+        <div class="stat-trend" style="color: #f85149;">↓ 3% vs yesterday</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Uptime</div>
+        <div class="stat-value" id="uptime">02:34:17</div>
+        <div class="stat-trend">since restart</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Current Rate</div>
+        <div class="stat-value" id="rate">4.2</div>
+        <div class="stat-trend">msg/s</div>
+      </div>
+    </div>
+
+    <!-- ACTIVE ACCOUNTS -->
+    <div class="section-title">Active Accounts (5/5)</div>
+    <div class="account-grid" id="accountList">
+      <!-- Populated by JS -->
+    </div>
+
+    <!-- LIVE LOG FEED -->
+    <div class="section-title">Live Log Feed</div>
+    <div class="log-container">
+      <div class="log-box" id="logBox">
+        <!-- Logs injected -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Mobile sidebar toggle
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menuToggle');
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+
+    // Close sidebar when clicking a nav item (mobile)
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.querySelector('.nav-item.active')?.classList.remove('active');
+        item.classList.add('active');
+        if (window.innerWidth <= 768) {
+          sidebar.classList.remove('open');
+        }
+      });
+    });
+
+    // Account data (simulated)
+    const accounts = [
+      { name: 'Account 1', status: 'online', channel: 'Channel 3', msgs: 127, state: '✅' },
+      { name: 'Account 2', status: 'limited', channel: 'Channel 1', msgs: 44, state: '⚠️ Rate limit' },
+      { name: 'Account 3', status: 'online', channel: 'Channel 5', msgs: 89, state: '✅' },
+      { name: 'Account 4', status: 'online', channel: 'Channel 2', msgs: 212, state: '✅' },
+      { name: 'Account 5', status: 'error', channel: 'Channel 4', msgs: 0, state: '❌ Token error' }
+    ];
+
+    function renderAccounts() {
+      const container = document.getElementById('accountList');
+      container.innerHTML = accounts.map(acc => {
+        let dotClass = 'dot-green';
+        if (acc.status === 'limited') dotClass = 'dot-yellow';
+        if (acc.status === 'error') dotClass = 'dot-red';
+        return `
+          <div class="account-row">
+            <div class="account-badge">
+              <span class="status-dot ${dotClass}"></span>
+              <span class="account-name">${acc.name}</span>
+            </div>
+            <div class="account-channel">${acc.channel}</div>
+            <div class="account-stats">
+              <span class="msg-count">${acc.msgs} msgs</span>
+              <span class="account-status-tag">${acc.state}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Log entries
+    const logs = [
+      { time: '14:23:01', type: 'success', text: 'Acc 2 → #general | Msg 2/2' },
+      { time: '14:23:00', type: 'success', text: 'Acc 1 → #chat | Msg 1/2' },
+      { time: '14:22:59', type: 'warning', text: 'Acc 4 rate limited, waiting 10s' },
+      { time: '14:22:58', type: 'success', text: 'Acc 3 → #spam | Msg 2/2' },
+      { time: '14:22:55', type: 'error', text: 'Acc 5 token invalid' },
+      { time: '14:22:50', type: 'success', text: 'Acc 2 → #general | Msg 1/2' }
+    ];
+
+    function renderLogs() {
+      const box = document.getElementById('logBox');
+      box.innerHTML = logs.map(log => {
+        let icon = '✅';
+        let cls = 'log-success';
+        if (log.type === 'warning') { icon = '⚠️'; cls = 'log-warning'; }
+        if (log.type === 'error') { icon = '❌'; cls = 'log-error'; }
+        return `<div class="log-entry"><span class="log-time">[${log.time}]</span><span class="${cls}">${icon} ${log.text}</span></div>`;
+      }).join('');
+    }
+
+    // Simulated stats update
+    let msgCount = 1247;
+    let errCount = 12;
+    let seconds = 9257; // 2h34m17s
+    let rate = 4.2;
+
+    function updateStats() {
+      document.getElementById('msgSent').innerText = msgCount.toLocaleString();
+      document.getElementById('errors').innerText = errCount;
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      const s = seconds % 60;
+      document.getElementById('uptime').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+      document.getElementById('rate').innerText = rate.toFixed(1);
+    }
+
+    // Simulate live data (demo)
+    setInterval(() => {
+      msgCount += Math.floor(Math.random() * 5) + 2;
+      errCount += Math.random() > 0.8 ? 1 : 0;
+      seconds += 1;
+      rate = 3.8 + Math.random() * 1.4;
+      updateStats();
+      
+      // Rotate logs
+      const newLog = {
+        time: new Date().toLocaleTimeString('en-US', { hour12: false }),
+        type: Math.random() > 0.9 ? 'warning' : 'success',
+        text: `Acc ${Math.floor(Math.random()*5)+1} → #general | Msg sent`
+      };
+      logs.unshift(newLog);
+      if (logs.length > 8) logs.pop();
+      renderLogs();
+      
+      // Randomly update account msgs
+      accounts.forEach(acc => { if (acc.status === 'online') acc.msgs += Math.floor(Math.random()*3); });
+      renderAccounts();
+    }, 3000);
+
+    // Control buttons (demo interaction)
+    document.getElementById('startBtn').addEventListener('click', () => {
+      logs.unshift({ time: new Date().toLocaleTimeString('en-US', { hour12: false }), type: 'success', text: '▶️ System started' });
+      renderLogs();
+    });
+    document.getElementById('pauseBtn').addEventListener('click', () => {
+      logs.unshift({ time: new Date().toLocaleTimeString('en-US', { hour12: false }), type: 'warning', text: '⏸️ System paused' });
+      renderLogs();
+    });
+    document.getElementById('stopBtn').addEventListener('click', () => {
+      logs.unshift({ time: new Date().toLocaleTimeString('en-US', { hour12: false }), type: 'error', text: '⏹️ System stopped' });
+      renderLogs();
+    });
+
+    // Settings trigger
+    document.getElementById('settingsTrigger').addEventListener('click', () => {
+      logs.unshift({ time: new Date().toLocaleTimeString('en-US', { hour12: false }), type: 'success', text: '🔔 Notifications read' });
+      renderLogs();
+    });
+
+    // Initial render
+    renderAccounts();
+    renderLogs();
+    updateStats();
+
+    // Re-render icons after dynamic content (though lucide auto-detects)
+    setTimeout(() => lucide.createIcons(), 20);
+  </script>
+</body>
+</html>
